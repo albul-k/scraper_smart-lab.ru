@@ -6,7 +6,15 @@
 import scrapy
 
 
-class SmartlabItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class SmartlabDivItem(scrapy.Item):
+    _id = scrapy.Field()
+    url = scrapy.Field()
+    name = scrapy.Field()
+    ticker = scrapy.Field()
+    buy_till = scrapy.Field()
+    cut_off_date = scrapy.Field()
+    year = scrapy.Field()
+    period = scrapy.Field()
+    divident = scrapy.Field()
+    price = scrapy.Field()
+    dividend_yield = scrapy.Field()

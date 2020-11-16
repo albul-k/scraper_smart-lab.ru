@@ -1,5 +1,4 @@
 import scrapy
-# from ..items import SmartlabDivItem
 from ..loader import SmartlabDivLoader
 
 
@@ -29,21 +28,21 @@ class SmartlabDividendSpider(scrapy.Spider):
         # Цена акции
         # Див. доходность
         template = {
-            'ticker': '',
-            'buy_till': '',
-            'cut_off_date': '',
-            'year': '',
-            'period': '',
-            'divident': '',
-            'price': '',
-            'dividend_yield': '',
+            'ticker': "dividend_data[idx].xpath('text()').get()",
+            'buy_till': "dividend_data[idx].xpath('text()').get()",
+            'cut_off_date': "dividend_data[idx].xpath('text()').get()",
+            'year': "dividend_data[idx].xpath('text()').get()",
+            'period': "dividend_data[idx].xpath('text()').get()",
+            'divident': "dividend_data[idx].xpath('*/text()').get()",
+            'price': "dividend_data[idx].xpath('text()').get()",
+            'dividend_yield': "dividend_data[idx].xpath('*/text()').get()",
         }
 
         idx = 0
         data = {}
         for key, value in template.items():
             try:
-                data[key] = dividend_data[idx].xpath('text()').get()
+                data[key] = eval(value)
             except Exception:
                 data[key] = None
             finally:

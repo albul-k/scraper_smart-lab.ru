@@ -5,10 +5,10 @@
 
 
 # useful for handling different item types with a single interface
-from scrapy import Request
-from itemadapter import ItemAdapter
-from scrapy.pipelines.images import ImagesPipeline
+
+from .bot.main import MyTelegramBot
 from pymongo import MongoClient
+from datetime import datetime
 
 
 class SmartlabPipeline:
@@ -16,15 +16,35 @@ class SmartlabPipeline:
     def __init__(self) -> None:
         db_client = MongoClient()
         self.db = db_client['smartlab']
+        self.collection = self.db['divident_calendar']
+        self.collection.drop()
 
     def process_item(self, item, spider):
-        collection = self.db[type(item).__name__]
-        collection.insert_one(item)
+
+        buy_till: datetime = item.get('buy_till')
+        if buy_till is not None and buy_till >= datetime.today():
+            self.collection.insert_one(item)
+
         return item
 
-        # adapter = ItemAdapter(item)
-        # if adapter['id'] in self.ids_seen:
-        #     raise DropItem(f"Duplicate item found: {item!r}")
-        # else:
-        #     self.ids_seen.add(adapter['id'])
-        #     return item
+    def close_spider(self, spider):
+
+        docs: object = self.collection.find().sort('buy_till', 1)
+        template: dict = {
+            'buy_till': lambda x: x.strftime('%d.%m.%Y'),
+            'cut_off_date': lambda x: x.strftime('%d.%m.%Y'),
+            'ticker': lambda x: x,
+            'name': lambda x: x,
+        }
+
+        table_data: str = ''
+
+        for doc in docs:
+            for key, value in template.items():
+                table_data += value(doc[key]) + ', '
+            table_data += '\n'
+
+        bot = MyTelegramBot(
+            chat_id='-418852529'
+        )
+        bot.send(table_data)

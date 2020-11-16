@@ -10,6 +10,13 @@
             "request": "launch",
             "program": "main.py",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Bot",
+            "type": "python",
+            "request": "launch",
+            "program": "./smartlab/bot.py",
+            "console": "integratedTerminal"
         }
     ]
 }
